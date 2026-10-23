@@ -1,0 +1,10 @@
+var C='kadr-v1';
+self.addEventListener('install',function(e){e.waitUntil(caches.open(C).then(function(c){return c.addAll(['./','./index.html','./manifest.json','./icon-180.png'])}));self.skipWaiting()});
+self.addEventListener('activate',function(e){e.waitUntil(self.clients.claim())});
+self.addEventListener('fetch',function(e){
+  if(e.request.method!=='GET')return;
+  e.respondWith(caches.match(e.request).then(function(hit){
+    var net=fetch(e.request).then(function(r){if(r&&r.ok){var cp=r.clone();caches.open(C).then(function(c){c.put(e.request,cp)})}return r}).catch(function(){return hit});
+    return hit||net;
+  }));
+});
